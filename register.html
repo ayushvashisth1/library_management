@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Library System</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  
+    <div id="message-display" class="fixed top-4 left-1/2 -translate-x-1/2 p-3 rounded-lg text-white text-center shadow-lg z-50 hidden"></div>
+
+  
+    <div id="registration-page" class="form-container">
+        <h2 class="text-3xl font-bold text-center text-gray-900 mb-6">Register for Library Access</h2>
+        <form id="registration-form" class="space-y-4">
+            <div class="form-group">
+                <label for="reg-fullname">Full Name</label>
+                <input type="text" id="reg-fullname" required class="rounded-lg">
+            </div>
+            <div class="form-group">
+                <label for="reg-fathername">Father's Name</label>
+                <input type="text" id="reg-fathername" required class="rounded-lg">
+            </div>
+            <div class="form-group">
+                <label for="reg-mobile">Mobile Number</label>
+                <input type="tel" id="reg-mobile" required class="rounded-lg">
+            </div>
+            <div class="form-group">
+                <label for="reg-email">Email Address</label>
+                <input type="email" id="reg-email" required class="rounded-lg">
+            </div>
+            <div class="form-group">
+                <label for="reg-password">Password</label>
+                <input type="password" id="reg-password" required class="rounded-lg">
+            </div>
+            <div class="form-group">
+                <label for="reg-college-name">College Name</label>
+                <input type="text" id="reg-college-name" required class="rounded-lg">
+            </div>
+            <div class="form-group">
+                <label for="reg-enrollment-number">Enrollment Number</label>
+                <input type="text" id="reg-enrollment-number" required class="rounded-lg">
+            </div>
+            <div class="form-group">
+                <label for="reg-branch">Branch</label>
+                <input type="text" id="reg-branch" required class="rounded-lg">
+            </div>
+            <div class="form-group">
+                <label for="reg-year">Year</label>
+                <input type="text" id="reg-year" required class="rounded-lg">
+            </div>
+            <button type="button" onclick="window.location.href='login.html'" class="btn-primary rounded-lg">
+  Register
+</button>
+
+        </form>
+        <p class="mt-6 text-center text-sm text-gray-600">
+            Already have an account?
+            <a href="login.html" class="font-medium text-blue-600 hover:text-blue-500">Sign in here</a>
+
+        </p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

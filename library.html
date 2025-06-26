@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Library Main Page</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f3f4f6;
+      padding: 2rem;
+    }
+    .btn-primary {
+      background-color: #2563eb;
+      color: white;
+      padding: 0.5rem 1rem;
+      font-weight: 600;
+    }
+    .btn-secondary {
+      background-color: #f87171;
+      color: white;
+      padding: 0.5rem 1rem;
+      font-weight: 600;
+    }
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+    }
+    th {
+      background-color: #e5e7eb;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    tbody tr:nth-child(even) {
+      background-color: #f9fafb;
+    }
+    .scroll-table {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <h2 class="text-3xl font-bold text-center text-gray-900 mb-6">📚 Welcome to the Library!</h2>
+  <p class="text-center text-gray-700 mb-4">Hello, <span id="display-username" class="font-semibold text-blue-600"></span>! Manage your books below.</p>
+  <p class="text-center text-sm text-gray-500 mb-8">Your ID: <span id="display-user-id" class="font-mono bg-gray-200 p-1 rounded"></span></p>
+
+  <!-- Available Books -->
+  <div class="mb-10">
+    <h3 class="text-xl font-semibold text-gray-800 mb-2">📘 Available Books</h3>
+    <div class="scroll-table border border-gray-300 rounded-lg shadow">
+      <table id="available-books-table">
+        <thead>
+          <tr>
+            <th>Title</th><th>Author</th><th>ISBN</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Issued Books -->
+  <div class="mb-10">
+    <h3 class="text-xl font-semibold text-gray-800 mb-2">📒 Your Issued Books</h3>
+    <div class="scroll-table border border-gray-300 rounded-lg shadow">
+      <table id="issued-books-table">
+        <thead>
+          <tr>
+            <th>Title</th><th>Author</th><th>Issue Date</th><th>Due Date</th><th>Fine</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+ 
+
+  <button 
+  onclick="sessionStorage.clear(); window.location.href = 'login.html';" 
+  class="btn-secondary rounded-lg mt-6">
+  Logout
+</button>
+
+
+  <script>
+ const availableBooks = [
+  { title: "Atomic Habits", author: "James Clear", isbn: "978-0735211292" },
+  { title: "The Alchemist", author: "Paulo Coelho", isbn: "978-0061122415" },
+  { title: "Clean Code", author: "Robert C. Martin", isbn: "978-0132350884" },
+  { title: "Thinking, Fast and Slow", author: "Daniel Kahneman", isbn: "978-0374533557" },
+  { title: "Sapiens", author: "Yuval Noah Harari", isbn: "978-0062316097" },
+  { title: "Deep Work", author: "Cal Newport", isbn: "978-1455586691" },
+  { title: "The Pragmatic Programmer", author: "Andrew Hunt", isbn: "978-0201616224" },
+  { title: "Zero to One", author: "Peter Thiel", isbn: "978-0804139298" },
+  { title: "Rich Dad Poor Dad", author: "Robert Kiyosaki", isbn: "978-1612680194" },
+  { title: "1984", author: "George Orwell", isbn: "978-0451524935" }
+];
+
+
+    const issuedBooks = JSON.parse(localStorage.getItem("issuedBooks") || "[]");
+
+    function displayAvailableBooks() {
+      const tbody = document.querySelector("#available-books-table tbody");
+      tbody.innerHTML = "";
+      availableBooks.forEach(book => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${book.title}</td>
+          <td>${book.author}</td>
+          <td>${book.isbn}</td>
+          <td><button class="btn-primary rounded" onclick='issueBook(${JSON.stringify(book)})'>Issue</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function displayIssuedBooks() {
+      const tbody = document.querySelector("#issued-books-table tbody");
+      tbody.innerHTML = "";
+      issuedBooks.forEach((book, i) => {
+        const issuedDate = new Date(book.issueDate);
+        const dueDate = new Date(issuedDate);
+        dueDate.setDate(dueDate.getDate() + 14);
+        const today = new Date();
+        const fine = today > dueDate ? `₹${(Math.ceil((today - dueDate) / (1000 * 60 * 60 * 24))) * 10}` : "₹0";
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${book.title}</td>
+          <td>${book.author}</td>
+          <td>${issuedDate.toDateString()}</td>
+          <td>${dueDate.toDateString()}</td>
+          <td>${fine}</td>
+          <td><button class="btn-secondary rounded" onclick='returnBook(${i})'>Return</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function issueBook(book) {
+      book.issueDate = new Date();
+      issuedBooks.push(book);
+      localStorage.setItem("issuedBooks", JSON.stringify(issuedBooks));
+      displayIssuedBooks();
+    }
+
+    function returnBook(index) {
+      issuedBooks.splice(index, 1);
+      localStorage.setItem("issuedBooks", JSON.stringify(issuedBooks));
+      displayIssuedBooks();
+    }
+
+
+    function logout() {
+      sessionStorage.clear();
+      location.href = "login.html";
+    }
+
+    // Initial Display
+    displayAvailableBooks();
+    displayIssuedBooks();
+    populateUserData();
+  </script>
+</body>
+</html>
