@@ -1,26 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to Library</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Library</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .btn-primary:hover {
+            background-color: #1d4ed8;
+        }
+    </style>
 </head>
-<body class="bg-gradient-to-r from-indigo-500 to-blue-500 min-h-screen flex items-center justify-center">
+<body class="min-h-screen flex flex-col items-center justify-center py-8">
 
-  <div class="bg-white p-10 rounded-2xl shadow-2xl text-center max-w-md w-full">
-    <h1 class="text-3xl font-bold mb-4 text-gray-800">📚 Welcome to the Library</h1>
-    <p class="text-gray-600 mb-8">Your digital library management system</p>
+    <div class="container w-full max-w-md card text-center">
+        <h1 class="text-4xl font-bold text-blue-700 mb-6">Welcome to My Library!</h1>
+        <p class="text-lg text-gray-700 mb-8">Your gateway to a world of knowledge.</p>
 
-    <div class="flex flex-col gap-4">
-      <button onclick="window.location.href='register.html'" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-        Register
-      </button>
-      <button onclick="window.location.href='login.html'" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-        Login
-      </button>
+        <div class="flex flex-col space-y-4">
+            <a href="login.html" target="_blank" class="btn-primary w-full text-center">Login</a>
+            <a href="register.html" target="_blank" class="btn-primary w-full text-center">Register</a>
+        </div>
     </div>
-  </div>
 
 </body>
 </html>
