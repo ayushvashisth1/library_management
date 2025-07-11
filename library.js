@@ -36,7 +36,6 @@ const messageModalContent = document.getElementById('messageModalContent');
 const messageModalConfirmBtn = document.getElementById('messageModalConfirmBtn');
 const messageModalCloseBtn = document.getElementById('messageModalCloseBtn');
 
-// --- Helper functions for localStorage ---
 function saveBooksToLocalStorage() {
   localStorage.setItem('libraryBooks', JSON.stringify(books));
 }
@@ -45,22 +44,17 @@ function loadBooksFromLocalStorage() {
   const storedBooks = localStorage.getItem('libraryBooks');
   if (storedBooks) {
     try {
-      // Load and ensure 'quantity' is a number and add 'quantity: 1' if missing (for old data)
+      
       const parsedBooks = JSON.parse(storedBooks);
       books = parsedBooks.map(book => ({
         ...book,
-        // If book.quantity exists and is a number, use it.
-        // Otherwise, if book.available exists (from old data), use 1 if true, 0 if false.
-        // Default to 1 if neither quantity nor available is explicitly set (fallback for very old/corrupt data)
         quantity: typeof book.quantity === 'number' ? book.quantity : (typeof book.available === 'boolean' ? (book.available ? 1 : 0) : 1)
       }));
     } catch (e) {
       console.error("Error parsing stored books data:", e);
-      // If parsing fails, revert to default books and save them to prevent further issues
       saveBooksToLocalStorage();
     }
   } else {
-    // If no data exists, save the initial default books to localStorage
     saveBooksToLocalStorage();
   }
 }
@@ -76,17 +70,16 @@ function loadIssuedBooksFromLocalStorage() {
       issuedBooks = JSON.parse(storedIssuedBooks);
     } catch (e) {
       console.error("Error parsing stored issued books data:", e);
-      // If parsing fails, clear issuedBooks and save to prevent further issues
       issuedBooks = [];
       saveIssuedBooksToLocalStorage();
     }
   } else {
-    // If no data exists, initialize as empty and save
+  
     issuedBooks = [];
     saveIssuedBooksToLocalStorage();
   }
 }
-// --- End Helper functions ---
+
 
 
 function showMessageModal(title, content, isConfirm = false) {
@@ -130,7 +123,6 @@ function updateActiveNav(sectionId) {
 
 function renderDashboard() {
   updateActiveNav('dashboard');
-  // Calculate total available copies across all books
   const totalAvailableCopies = books.reduce((sum, book) => sum + book.quantity, 0);
 
   contentDiv.innerHTML = `
@@ -228,13 +220,10 @@ async function issueBook(bookId) {
     await showMessageModal('Error', 'Book not found.');
     return;
   }
-  // Check if any copies are available based on quantity
   if (book.quantity <= 0) {
     await showMessageModal('Info', `"${book.title}" currently has no copies available.`);
     return;
   }
-
-  // Check user's maximum issued book limit (4 books)
   const userIssuedBooksCount = issuedBooks.filter(item => item.userId === currentUser.libraryNumber).length;
   const MAX_ISSUED_BOOKS = 4;
 
@@ -243,33 +232,30 @@ async function issueBook(bookId) {
     return;
   }
 
-  // A user can issue multiple copies of the same book, if available and if their global limit allows.
-  // The 'alreadyIssued' check (for one copy per user per title) has been removed to allow this.
-
   const confirmed = await showMessageModal('Confirm Issue', `Are you sure you want to issue "${book.title}"?`, true);
   if (confirmed) {
-    book.quantity--; // Decrement the quantity of the book
+    book.quantity--; 
     const issueDate = new Date();
     const returnDate = new Date();
-    returnDate.setDate(issueDate.getDate() + 14); // Set return date 14 days from now
+    returnDate.setDate(issueDate.getDate() + 14); 
 
     issuedBooks.push({
       bookId: book.id,
       userId: currentUser.libraryNumber,
-      issueDate: issueDate.toISOString().slice(0, 10), // Format YYYY-MM-DD
-      returnDate: returnDate.toISOString().slice(0, 10) // Format YYYY-MM-DD
+      issueDate: issueDate.toISOString().slice(0, 10), 
+      returnDate: returnDate.toISOString().slice(0, 10) 
     });
 
-    saveBooksToLocalStorage(); // Save updated books array
-    saveIssuedBooksToLocalStorage(); // Save updated issuedBooks array
+    saveBooksToLocalStorage(); 
+    saveIssuedBooksToLocalStorage(); 
     await showMessageModal('Success', `"${book.title}" has been successfully issued to you! Please return it by ${returnDate.toISOString().slice(0, 10)} to avoid fines.`);
-    renderBooks(searchBar.value); // Re-render books list to show updated availability without changing page
+    renderBooks(searchBar.value); 
   }
 }
 
 async function returnBook(bookId) {
   const book = books.find(b => b.id === bookId);
-  // Find only one instance of the book issued by the current user to return
+
   const issuedIndex = issuedBooks.findIndex(item => item.bookId === bookId && item.userId === currentUser.libraryNumber);
 
   if (!book || issuedIndex === -1) {
@@ -278,13 +264,13 @@ async function returnBook(bookId) {
   }
   const confirmed = await showMessageModal('Confirm Return', `Are you sure you want to return "${book.title}"?`, true);
   if (confirmed) {
-    book.quantity++; // Increment the quantity of the book
-    issuedBooks.splice(issuedIndex, 1); // Remove only one issued instance
-    saveBooksToLocalStorage(); // Save updated books array
-    saveIssuedBooksToLocalStorage(); // Save updated issuedBooks array
+    book.quantity++; 
+    issuedBooks.splice(issuedIndex, 1); 
+    saveBooksToLocalStorage(); 
+    saveIssuedBooksToLocalStorage(); 
     await showMessageModal('Success', `"${book.title}" has been successfully returned!`);
-    renderMyIssuedBooks(); // Re-render the list of issued books (if on that page)
-    renderBooks(searchBar.value); // Re-render main books list for general overview (if on that page)
+    renderMyIssuedBooks(); 
+    renderBooks(searchBar.value);
   }
 }
 
@@ -293,7 +279,7 @@ async function handleChangePassword(event) {
   const currentPassword = document.getElementById('currentPassword').value;
   const newPassword = document.getElementById('newPassword').value;
   const confirmNewPassword = document.getElementById('confirmNewPassword').value;
-  passwordChangeMessage.textContent = ''; // Clear previous messages
+  passwordChangeMessage.textContent = ''; 
 
   const storedUserString = localStorage.getItem('registeredUser');
   let registeredUser = null;
@@ -334,32 +320,29 @@ async function handleChangePassword(event) {
     return;
   }
 
-  // Update password in the stored user object and current user object
+  
   registeredUser.password = newPassword;
   localStorage.setItem('registeredUser', JSON.stringify(registeredUser));
-  currentUser.password = newPassword; // Also update the in-memory current user object
+  currentUser.password = newPassword; 
 
   passwordChangeMessage.textContent = 'Password changed successfully!';
   passwordChangeMessage.classList.remove('text-red-600');
   passwordChangeMessage.classList.add('text-green-600');
 
-  // Automatically close modal and clear message after a short delay
+  
   setTimeout(() => {
     closeModal('changePasswordModal');
     passwordChangeMessage.textContent = '';
-    changePasswordForm.reset(); // Clear form fields
+    changePasswordForm.reset(); 
   }, 1500);
 }
 
 async function handleLogout() {
   const confirmed = await showMessageModal('Confirm Logout', 'Are you sure you want to log out?', true);
   if (confirmed) {
-    // Redirect to login page
     window.location.href = 'login.html';
   }
 }
-
-// --- Event Listeners ---
 navLinks.forEach(link => {
   link.addEventListener('click', (e) => {
     e.preventDefault();
@@ -372,7 +355,6 @@ navLinks.forEach(link => {
 });
 
 searchBar.addEventListener('input', () => {
-  // Only re-render books if the 'Books' section is currently active
   if (document.querySelector('.nav-link.active').dataset.section === 'books') {
     renderBooks(searchBar.value);
   }
@@ -382,7 +364,7 @@ userOptionsBtn.addEventListener('click', () => {
   userOptionsDropdown.classList.toggle('hidden');
 });
 
-// Close user options dropdown if clicked outside
+
 document.addEventListener('click', (event) => {
   if (!userOptionsBtn.contains(event.target) && !userOptionsDropdown.contains(event.target)) {
     userOptionsDropdown.classList.add('hidden');
@@ -391,32 +373,24 @@ document.addEventListener('click', (event) => {
 
 changePasswordLink.addEventListener('click', (e) => {
   e.preventDefault();
-  userOptionsDropdown.classList.add('hidden'); // Close dropdown first
+  userOptionsDropdown.classList.add('hidden'); 
   openModal('changePasswordModal');
 });
 
 logoutLink.addEventListener('click', (e) => {
   e.preventDefault();
-  userOptionsDropdown.classList.add('hidden'); // Close dropdown first
+  userOptionsDropdown.classList.add('hidden'); 
   handleLogout();
 });
 
 changePasswordForm.addEventListener('submit', handleChangePassword);
 
-// Initial load: This runs once the DOM is fully loaded
+
 document.addEventListener('DOMContentLoaded', () => {
-  // IMPORTANT: If you just updated the initial 'books' array,
-  // and are seeing old quantities, clear localStorage in your browser's
-  // developer tools (Application -> Local Storage -> your_file_origin -> libraryBooks/libraryIssuedBooks)
-  // or temporarily uncomment the lines below for a full reset.
-  // localStorage.removeItem('libraryBooks');
-  // localStorage.removeItem('libraryIssuedBooks');
-  // localStorage.removeItem('registeredUser'); // If you want to reset the user too
 
   loadBooksFromLocalStorage();
   loadIssuedBooksFromLocalStorage();
 
-  // Load or initialize currentUser based on registeredUser in localStorage
   const storedUserString = localStorage.getItem('registeredUser');
   if (storedUserString) {
     try {
@@ -425,19 +399,16 @@ document.addEventListener('DOMContentLoaded', () => {
       currentUser.libraryNumber = registeredUser.libraryNumber;
     } catch (e) {
       console.error("Error parsing stored user data on load:", e);
-      // Fallback: If user data is corrupted, might want to regenerate or prompt for login
-      localStorage.removeItem('registeredUser'); // Remove corrupt data
+      
+      localStorage.removeItem('registeredUser'); 
       currentUser.libraryNumber = 'LIB' + Math.random().toString(36).substring(2, 10).toUpperCase();
       currentUser.password = 'password123';
       localStorage.setItem('registeredUser', JSON.stringify(currentUser));
     }
   } else {
-    // If no registered user, save the currently generated user to localStorage
+    
     localStorage.setItem('registeredUser', JSON.stringify(currentUser));
   }
-
-  // Display the user's library ID
   libraryIdDisplay.textContent = currentUser.libraryNumber;
-  // Render the initial dashboard view
   renderDashboard();
 });
